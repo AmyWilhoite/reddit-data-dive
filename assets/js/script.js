@@ -1,4 +1,6 @@
 let keywordsArray = [];
+getKeywords();
+searchOnReddit($("#recentsearches").val());
 
 $("#searchBtn").on("click", function (event) {
     event.preventDefault();
@@ -8,6 +10,9 @@ $("#searchBtn").on("click", function (event) {
     } else {
         // searchOnWikipedia($("#userData").val());
         searchOnReddit($("#userData").val());
+        saveKeywords($("#userData").val());
+        renderKeywords();
+        // renderKeywords();
     }
 
 })
@@ -40,11 +45,35 @@ function searchOnWikipedia(term) {
 }
 
 $("#recentsearches").on("change", function () {
-    alert("select changed");
+    
+    searchOnReddit($("#recentsearches").val());
 })
 
 // Event Listener for Text Highlight
 //https://stackoverflow.com/questions/3731328/on-text-highlight-event
+function debounce(fn, delay) {
+    let timer = null;
+    return function () {
+      var context = this, args = arguments;
+      clearTimeout(timer);
+      timer = setTimeout(function () {
+        fn.apply(context, args);
+      }, delay);
+    };
+  };
+// const redditPostContainer = document.getElementById("redditpostcontainer");
+//   $("#redditpostcontainer").on("selectionchange",debounce(function (event) {
+//     let selection = document.getSelection ? document.getSelection().toString() :  document.selection.createRange().toString() ;
+//     console.log(selection);
+//   }, 250));
+document.addEventListener("selectionchange", debounce(function (event) {
+    let selection = document.getSelection ? document.getSelection().toString() :  document.selection.createRange().toString() ;
+    console.log(selection);
+    searchOnWikipedia(selection);
+
+  }, 250));
+
+
 
 // Reddit Search Function
 function searchOnReddit(keyword) {
@@ -74,17 +103,17 @@ function renderRedditSearchResults(jsonresponse) {
     for (let i = 0; i < jsonresponse.data.children.length; i++) {
         $("#redditpostcontainer").append(
             `<div class="card" style="width: 18rem;">
-    <div class="card-body d-flex row justify-content-between mt-0 pb-0">
-      <span class="card-text reddit-post-sr">${jsonresponse.data.children[i].data.subreddit_name_prefixed}</span>
-      <span class="card-text reddit-post-author"> Posted by u/${jsonresponse.data.children[i].data.author}</span>
-      <span class="card-text reddit-post-time"> on ${moment.unix(jsonresponse.data.children[i].data.created).format("MM/DD/YYYY")}</span>
+    <div class="card-header mt-0 pb-0">
+      <p class="card-text reddit-post-sr pt-0 my-0">${jsonresponse.data.children[i].data.subreddit_name_prefixed}</p>
+      <p class="card-text reddit-post-author my-0"> Posted by u/${jsonresponse.data.children[i].data.author}</p>
+      <p class="card-text reddit-post-time mb-1"> on ${moment.unix(jsonresponse.data.children[i].data.created).format("MM/DD/YYYY")}</p>
     </div>
     <div class="card-body pt-0">
-      <h5 class="card-title reddit-post-title ">${jsonresponse.data.children[i].data.title}</h5>
-      <img src="${returnPreviewImage(jsonresponse.data.children[i])}" class="card-img-top" alt="...">
-      <p class="card-text reddit-post-text">${jsonresponse.data.children[i].data.selftext_html || ""}</p>
+      <h5 class="card-title reddit-post-title">${jsonresponse.data.children[i].data.title}</h5>
+      <img src="${returnPreviewImage(jsonresponse.data.children[i])}" class="card-img-top" alt="..." style="max-height:250px; max-width:250px; width:auto; heigh:auto; margin: 0 auto; display:block">
+      
     </div>
-    <div class="container d-flex row justify-content-between">
+    <div class="container d-flex justify-content-between card-footer">
       <span class="commentcount"><i class="fas fa-comment-dots"></i> ${jsonresponse.data.children[i].data.num_comments}</span>
       <span class="upcount"><i class="fas fa-arrow-alt-circle-up"></i> ${jsonresponse.data.children[i].data.ups}</span>
       <span class="downcount"><i class="fas fa-arrow-alt-circle-down"></i> ${jsonresponse.data.children[i].data.downs}</span>
@@ -94,7 +123,7 @@ function renderRedditSearchResults(jsonresponse) {
 }
 
 // check preview image
-function returnPreviewImage (child) {
+function returnPreviewImage(child) {
     if (!child.data.preview) {
         return "https://play-lh.googleusercontent.com/MDRjKWEIHO9cGiWt-tlvOGpAP3x14_89jwAT-nQTS6Fra-gxfakizwJ3NHBTClNGYK4"
     } else {
@@ -107,22 +136,26 @@ function saveKeywords(keywords) {
     // const exists = Boolean(keywordsArray.find(x => keywords));
     keywordsArray.unshift(keywords);
     localStorage.setItem("KeywordsArray", JSON.stringify(keywordsArray));
+    
 }
 
 // read from localstorage
 function getKeywords() {
-    keywordsArray = localStorage.getItem("KeywordsArray") || [];
+    keywordsArray = JSON.parse(localStorage.getItem("KeywordsArray")) || [];
+    renderKeywords();
 }
 
 // Render keywords on screen
+function renderKeywords() {
+    $("#recentsearches").empty();
+    for (let i = 0; i < keywordsArray.length; i++) {
+        $("#recentsearches").append(
+            `<option value="${keywordsArray[i]}">${keywordsArray[i]}</option>`
+        );
+    }
+}
 
 
-// fetch('https://api.github.com/users/manishmshiva', {
-//     method: "GET",
-//     headers: { "Content-type": "application/json;charset=UTF-8" }
-// })
 
-//  {
-//     method: "GET", 
-//     headers: { "Authorization": "Bearer AAAAAAAAAAAAAAAAAAAAAGFDZAEAAAAAhkSVV8tv2CtCy5Fg92bFLzPKwX4%3D2glHC2Al0MR9iDDQH4PJpF9G9ozeVjq9ApPTfoTVb64MmN5xSa" } 
-// }
+// d-flex row justify-content-between 
+/* <p class="card-text reddit-post-text">${jsonresponse.data.children[i].data.selftext_html || ""}</p> */

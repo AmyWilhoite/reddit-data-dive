@@ -13,102 +13,54 @@
   <link rel="stylesheet" href="./assets/css/style.css">
 </head>
 
-<body>
+<body class="jumbotron p-0">
   <!-- smaller area  -->
-  <div class="jumbotron jumbotron-fluid">
-    <div class="container">
-      <h1 class="display-4">Reddit Data Dive</h1>
-
-    </div>
+  <div class="px-md-5 p-3 jumbotron-fluid bg-secondary text-light">
+      <h1 class="display-4 m-0 font-weight-bold">Reddit Data Dive</h1>
+      <p class ="font-italic m-0"> Search top reddit posts and define search terms with wikipedia</p>
   </div>
   <!-- search bar -->
-  <div class="container-fluid">
-    <div class="navbar navbar-light bg-light px-md-5">
-      <div class="form-inline">
-        <input id="userData" class="form-control mr-sm-2" type="search" placeholder="Search Reddit"
-          aria-label="Search">
-        <button class="btn btn-outline-success my-2 my-sm-0" id="searchBtn">Search</button>
-      </div>
+  <div class="container-fluid p-2">
     </div>
     <!-- container with sections -->
-    <div class="jumbotron jumbotron-fluid">
+    <div class="jumbotron p-0 jumbotron-fluid">
       <div>
         <div class="row container-fluid px-md-5">
           <div class="col-3">
-            <h3>Recent Searches</h3>
-            <select id="recentsearches" class="form-select" aria-label="Default select example">
-              <!-- <option value="0"></option>
-              <option value="1">One</option>
-              <option value="2">Two</option>
-              <option value="3">Three</option> -->
-            </select>
+            <h2>Search Keywords</h2>
+                  <input id="userData" class="form-control mr-sm-2" type="search" placeholder="Search Reddit"
+                    aria-label="Search">
+                  <button class="btn btn-secondary mt-2" id="searchBtn">Search</button>
+                <div class="form-group mt-5">
+                  <label class= "font-weight-bold">Refine Search Results</label>
+                  <!-- <select id="recentsearches" class="form-select form-control"></select> -->
+                  <select multiple class="form-control" id="exampleFormControlSelect2">  
+                    <option>1</option>
+                    <option>2</option>
+                    <option>3</option>
+                    <option>4</option>
+                    <option>5</option>
+                  </select>
+                </div>
+                <div class="form-group mt-5">
+                  <label class="font-weight-bold">Recent Searches</label>
+                  <!-- <select multiple class="form-control" id="exampleFormControlSelect2"> -->
+                    <select id="recentsearches" class="form-control">
+                  </select>
+                </div>
           </div>
           <div class="col-sm">
             <div class="jumbotron-fluid">
-              <div class="container-fluid bg-light border px-lg-5">
+              <!-- *** removing chart section for now *** -->
+              <!-- <div class="container-fluid bg-light border px-lg-5">
                 <img src=assets/images/ftcms_347ece48-0f69-11e9-a3aa-118c761d2745.png style="width:128px;height:128px;">
-              </div>
+              </div> -->
             </div>
             <!-- insert reddit cards from bootstrap -->
             <div class="col row container-fluid px-lg-5">
               <h2>Top 3 Reddit Posts</h2>
             </div>
             <div class="card-deck col row container-fluid px-lg-5 justify-content-between" id="redditpostcontainer">
-              <!-- <div class="card" style="width: 18rem;">
-                <div class="card-body d-flex row justify-content-between mt-0 pb-0">
-                  <span class="card-text reddit-post-sr">homelab</span>
-                  <span class="card-text reddit-post-author">xuyang</span>
-                  <span class="card-text reddit-post-time">13 hrs ago</span>
-                </div>
-                <div class="card-body pt-0">
-                  <img src="..." class="card-img-top" alt="...">
-                  <h5 class="card-title reddit-post-title ">Hello World!</h5>
-                  <p class="card-text reddit-post-text">Some quick example text to build on the card title and make up
-                    the bulk of the card's content.</p>
-                </div>
-                <div class="container d-flex row justify-content-between">
-                  <span class="commentcount">3 Comments</span>
-                  <span class="upcount">Up 3</span>
-                  <span class="downcount">Down 5</span>
-                </div>
-              </div>
-              <div class="card" style="width: 18rem;">
-                <div class="card-body d-flex row justify-content-between mt-0 pb-0">
-                  <span class="card-text reddit-post-sr">homelab</span>
-                  <span class="card-text reddit-post-author">xuyang</span>
-                  <span class="card-text reddit-post-time">13 hrs ago</span>
-                </div>
-                <div class="card-body pt-0">
-                  <img src="..." class="card-img-top" alt="...">
-                  <h5 class="card-title reddit-post-title ">Hello World!</h5>
-                  <p class="card-text reddit-post-text">Some quick example text to build on the card title and make up
-                    the bulk of the card's content.</p>
-                </div>
-                <div class="container d-flex row justify-content-between">
-                  <span class="commentcount">3 Comments</span>
-                  <span class="upcount">Up 3</span>
-                  <span class="downcount">Down 5</span>
-                </div>
-              </div>
-              <div class="card" style="width: 18rem;">
-                <div class="card-body d-flex row justify-content-between mt-0 pb-0">
-                  <span class="card-text reddit-post-sr">homelab</span>
-                  <span class="card-text reddit-post-author">xuyang</span>
-                  <span class="card-text reddit-post-time">13 hrs ago</span>
-                </div>
-                <div class="card-body pt-0">
-                  <img src="..." class="card-img-top" alt="...">
-                  <h5 class="card-title reddit-post-title ">Hello World!</h5>
-                  <p class="card-text reddit-post-text">Some quick example text to build on the card title and make up
-                    the bulk of the card's content.</p>
-                </div>
-                <div class="container d-flex row justify-content-between">
-                  <span class="commentcount">3 Comments</span>
-                  <span class="upcount">Up 3</span>
-                  <span class="downcount">Down 5</span>
-                </div>
-              </div> -->
-              
             </div>
           </div>
         </div>

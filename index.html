@@ -1,72 +1,122 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <link rel="stylesheet" href="./assets/css/style.css">
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reddit-bootstrap/4.5.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css"
+    integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous" />
+  <link rel="stylesheet" href="./assets/css/style.css">
 </head>
+
 <body>
-    <!-- smaller area  -->
-    <div class="jumbotron jumbotron-fluid">
-        <div class="container">
-          <h1 class="display-4">Twitter Data Dive</h1>
-        
-        </div>
+  <!-- smaller area  -->
+  <div class="jumbotron jumbotron-fluid">
+    <div class="container">
+      <h1 class="display-4">Reddit Data Dive</h1>
+
+    </div>
+  </div>
+  <!-- search bar -->
+  <div class="container-fluid">
+    <div class="navbar navbar-light bg-light px-md-5">
+      <div class="form-inline">
+        <input id="userData" class="form-control mr-sm-2" type="search" placeholder="Search Reddit"
+          aria-label="Search">
+        <button class="btn btn-outline-success my-2 my-sm-0" id="searchBtn">Search</button>
       </div>
-      <!-- search bar -->
-        <div class="container-fluid">
-        <div class="navbar navbar-light bg-light px-md-5">
-            <div class="form-inline">
-              <input id = "userData" class="form-control mr-sm-2" type="search" placeholder="Search Twitter" aria-label="Search">
-              <button class="btn btn-outline-success my-2 my-sm-0" id="searchBtn">Search</button>
-            </div>
-        </div>
-        <!-- container with sections -->
+    </div>
+    <!-- container with sections -->
     <div class="jumbotron jumbotron-fluid">
-    <div>
+      <div>
         <div class="row container-fluid px-md-5">
           <div class="col-3">
             <h3>Recent Searches</h3>
             <select id="recentsearches" class="form-select" aria-label="Default select example">
               <option value="0"></option>
               <option value="1">One</option>
-                <option value="2">Two</option>
-                <option value="3">Three</option>
-              </select>
-    </div>
+              <option value="2">Two</option>
+              <option value="3">Three</option>
+            </select>
+          </div>
           <div class="col-sm">
             <div class="jumbotron-fluid">
-                <div class="container-fluid bg-light border px-lg-5">
-                  <img src = assets/images/ftcms_347ece48-0f69-11e9-a3aa-118c761d2745.png  style = "width:128px;height:128px;">
-                </div>
+              <div class="container-fluid bg-light border px-lg-5">
+                <img src=assets/images/ftcms_347ece48-0f69-11e9-a3aa-118c761d2745.png style="width:128px;height:128px;">
+              </div>
             </div>
-            <!-- insert twitter cards from bootstrap -->
-          <div class= "col row container-fluid px-lg-5">
-            <h2>Top 3 Twitter Posts</h2>
+            <!-- insert reddit cards from bootstrap -->
+            <div class="col row container-fluid px-lg-5">
+              <h2>Top 3 Reddit Posts</h2>
+            </div>
+            <div class="col row container-fluid px-lg-5 justify-content-between" id="redditpostcontainer">
+              <!-- <div class="card" style="width: 18rem;">
+                <div class="card-body d-flex row justify-content-between mt-0 pb-0">
+                  <span class="card-text reddit-post-sr">homelab</span>
+                  <span class="card-text reddit-post-author">xuyang</span>
+                  <span class="card-text reddit-post-time">13 hrs ago</span>
+                </div>
+                <div class="card-body pt-0">
+                  <img src="..." class="card-img-top" alt="...">
+                  <h5 class="card-title reddit-post-title ">Hello World!</h5>
+                  <p class="card-text reddit-post-text">Some quick example text to build on the card title and make up
+                    the bulk of the card's content.</p>
+                </div>
+                <div class="container d-flex row justify-content-between">
+                  <span class="commentcount">3 Comments</span>
+                  <span class="upcount">Up 3</span>
+                  <span class="downcount">Down 5</span>
+                </div>
+              </div>
+              <div class="card" style="width: 18rem;">
+                <div class="card-body d-flex row justify-content-between mt-0 pb-0">
+                  <span class="card-text reddit-post-sr">homelab</span>
+                  <span class="card-text reddit-post-author">xuyang</span>
+                  <span class="card-text reddit-post-time">13 hrs ago</span>
+                </div>
+                <div class="card-body pt-0">
+                  <img src="..." class="card-img-top" alt="...">
+                  <h5 class="card-title reddit-post-title ">Hello World!</h5>
+                  <p class="card-text reddit-post-text">Some quick example text to build on the card title and make up
+                    the bulk of the card's content.</p>
+                </div>
+                <div class="container d-flex row justify-content-between">
+                  <span class="commentcount">3 Comments</span>
+                  <span class="upcount">Up 3</span>
+                  <span class="downcount">Down 5</span>
+                </div>
+              </div>
+              <div class="card" style="width: 18rem;">
+                <div class="card-body d-flex row justify-content-between mt-0 pb-0">
+                  <span class="card-text reddit-post-sr">homelab</span>
+                  <span class="card-text reddit-post-author">xuyang</span>
+                  <span class="card-text reddit-post-time">13 hrs ago</span>
+                </div>
+                <div class="card-body pt-0">
+                  <img src="..." class="card-img-top" alt="...">
+                  <h5 class="card-title reddit-post-title ">Hello World!</h5>
+                  <p class="card-text reddit-post-text">Some quick example text to build on the card title and make up
+                    the bulk of the card's content.</p>
+                </div>
+                <div class="container d-flex row justify-content-between">
+                  <span class="commentcount">3 Comments</span>
+                  <span class="upcount">Up 3</span>
+                  <span class="downcount">Down 5</span>
+                </div>
+              </div> -->
+              
+            </div>
           </div>
-        <div class= "col row container-fluid px-lg-5">
-          <div class="col border bg-light">
-            Tweet 1 
-            <p>Tweet:</p><span id="Tweet"></span>
-          </div>
-          <div class="col border bg-light">
-           Tweet 2 test 
-            <p>Tweet:</p><span id="Tweet"></span>
-          </div>
-          <div class="col border bg-light">
-            Tweet 3 test
-            <p>Tweet:</p><span id="Tweet"></span>
-          </div>
-        </div>
         </div>
       </div>
-    </div>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/js/bootstrap.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/reddit-bootstrap/4.5.0/js/bootstrap.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
       <script src="./assets/js/script.js"></script>
 </body>
+
 </html>

@@ -16,59 +16,107 @@
 <body class="jumbotron p-0">
   <!-- smaller area  -->
   <div class="px-md-5 p-3 jumbotron-fluid bg-secondary text-light">
-      <h1 class="display-4 m-0 font-weight-bold">Reddit Data Dive</h1>
-      <p class ="font-italic m-0"> Search top reddit posts and define search terms with wikipedia</p>
+    <h1 class="display-4 m-0 font-weight-bold">Reddit Data Dive</h1>
+    <p class="font-italic m-0"> Search top reddit posts and define search terms with wikipedia</p>
   </div>
   <!-- search bar -->
   <div class="container-fluid p-2">
-    </div>
-    <!-- container with sections -->
-    <div class="jumbotron p-0 jumbotron-fluid">
-      <div>
-        <div class="row container-fluid px-md-5">
-          <div class="col-3">
-            <h2>Search Keywords</h2>
-                  <input id="userData" class="form-control mr-sm-2" type="search" placeholder="Search Reddit"
-                    aria-label="Search">
-                  <button class="btn btn-secondary mt-2" id="searchBtn">Search</button>
-                <div class="form-group mt-5">
-                  <label class= "font-weight-bold">Refine Search Results</label>
-                  <!-- <select id="recentsearches" class="form-select form-control"></select> -->
-                  <select multiple class="form-control" id="exampleFormControlSelect2">  
-                    <option>1</option>
+  </div>
+  <!-- container with sections -->
+  <div class="jumbotron p-0 jumbotron-fluid">
+    <div>
+      <div class="row container-fluid px-md-5">
+        <div class="col-3">
+          <h2>Search Keywords</h2>
+          <input id="userData" class="form-control mr-sm-2" type="search" placeholder="Search Reddit"
+            aria-label="Search">
+          <button class="btn btn-secondary mt-2" id="searchBtn">Search</button>
+          <div class="form-group mt-5">
+            <h4>Advanced Filters</h4>
+            <hr>
+            <div class="container">
+              <div class="row row-cols-md-1 row-cols-lg-2">
+                <div class="col">
+                  <label class="font-weight-bold">Category</label>
+
+                  <select class="form-control" id="categories">
+                    <option value="any">Any</option>
                     <option>2</option>
                     <option>3</option>
                     <option>4</option>
                     <option>5</option>
                   </select>
                 </div>
-                <div class="form-group mt-5">
-                  <label class="font-weight-bold">Recent Searches</label>
-                  <!-- <select multiple class="form-control" id="exampleFormControlSelect2"> -->
-                    <select id="recentsearches" class="form-control">
+                <div class="col">
+                  <label class="font-weight-bold">Scope</label>
+
+                  <select class="form-control" id="scope">
+                    <option value="any">Reddit</option>
+                    <option>Subreddit</option>
+
                   </select>
                 </div>
+                <div class="col-12">
+                  <label class="font-weight-bold">Subreddit</label>
+
+                  <input class="form-control" list="subredditlist" id="subredditselection" placeholder="Type to narrow down">
+                  <datalist id="subredditlist">
+
+                  </datalist>
+
+                  </select>
+                </div>
+                <div class="col">
+                  <label class="font-weight-bold">Sort By</label>
+                  <select class="form-control" id="sortby">
+                    <option value="top">Top</option>
+                    <option value="relevance">Relevance</option>
+                    <option value="hot">Hot</option>
+                    <option value="new">New</option>
+                    <option value="comments">Comments</option>
+                  </select>
+                </div>
+                <div class="col">
+                  <label class="font-weight-bold">Time Span</label>
+                  <select class="form-control" id="timespan">
+                    <option value="day">Day</option>
+                    <option value="hour">Hour</option>
+                    <option value="week">Week</option>
+                    <option value="month">Month</option>
+                    <option value="year">Year</option>
+                    <option value="all">All</option>
+                  </select>
+                </div>
+              </div>
+            </div>
           </div>
-          <div class="col-sm">
-            <div class="jumbotron-fluid">
-              <!-- *** removing chart section for now *** -->
-              <!-- <div class="container-fluid bg-light border px-lg-5">
+          <div class="form-group mt-5">
+            <label class="font-weight-bold">Recent Searches</label>
+            <!-- <select multiple class="form-control" id="exampleFormControlSelect2"> -->
+            <select id="recentsearches" class="form-control">
+            </select>
+          </div>
+        </div>
+        <div class="col-sm">
+          <div class="jumbotron-fluid">
+            <!-- *** removing chart section for now *** -->
+            <!-- <div class="container-fluid bg-light border px-lg-5">
                 <img src=assets/images/ftcms_347ece48-0f69-11e9-a3aa-118c761d2745.png style="width:128px;height:128px;">
               </div> -->
-            </div>
-            <!-- insert reddit cards from bootstrap -->
-            <div class="col row container-fluid px-lg-5">
-              <h2>Top 3 Reddit Posts</h2>
-            </div>
-            <div class="card-deck col row container-fluid px-lg-5 justify-content-between" id="redditpostcontainer">
-            </div>
+          </div>
+          <!-- insert reddit cards from bootstrap -->
+          <div class="col row container-fluid px-lg-5">
+            <h2>Top 3 Reddit Posts</h2>
+          </div>
+          <div class="card-deck col row container-fluid px-lg-5 justify-content-between" id="redditpostcontainer">
           </div>
         </div>
       </div>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/js/bootstrap.min.js"></script>
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
-      <script src="./assets/js/script.js"></script>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+    <script src="./assets/js/script.js"></script>
 </body>
 
 </html>

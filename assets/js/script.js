@@ -155,7 +155,60 @@ function renderKeywords() {
     }
 }
 
+// Get all available categories
+function loadCategories() {
+    let requestUrl = `https://www.reddit.com/api/available_subreddit_categories.json`;
+    fetch(requestUrl)
+        .then(function (response) {
+            if (response.ok) {
+                return response.json();
+            } else {
+                return;
+            }
+        })
+        .then(function (data) {
+            if (!data) {
+                alert("We ran into some issues, please contact the developer at zhangxuyang.chn@gmail.com");
+            } else {
+                // console.log(data);
+                $("#categories").empty();
+                for (let i = 0; i < data.length; i++) {
+                    $("#categories").append(
+                        `<option value="${data[i].category_id}">${data[i].category_name}</option>`
+                    );
+                }
+                
+            }
+        })
+}
+loadCategories();
 
-
+// Get all subreddit by category
+function loadSubredditByCat(categoryID) {
+    let requestUrl = `https://www.reddit.com/api/subreddits_in_category.json?category=${categoryID}&limit=100`;
+    fetch(requestUrl)
+        .then(function (response) {
+            if (response.ok) {
+                return response.json();
+            } else {
+                return;
+            }
+        })
+        .then(function (data) {
+            if (!data) {
+                alert("We ran into some issues, please contact the developer at zhangxuyang.chn@gmail.com");
+            } else {
+                console.log(data);
+                $("#subredditlist").empty();
+                for (let i = 0; i < data.data.children.length; i++) {
+                    $("#subredditlist").append(
+                        `<option value="${data.data.children[i].data.display_name_prefixed}">`
+                    );
+                }
+                
+            }
+        })
+}
+loadSubredditByCat("c10");
 // d-flex row justify-content-between 
 /* <p class="card-text reddit-post-text">${jsonresponse.data.children[i].data.selftext_html || ""}</p> */

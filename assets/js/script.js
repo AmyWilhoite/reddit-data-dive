@@ -1,4 +1,13 @@
 let keywordsArray = [];
+let tooltipTitle;
+let tooltipSnippet;
+let tooltipLink;
+let tooltipHTML;
+let tooltipEl;
+const searchRegExp = /\s/g;
+const replaceWith = '_';
+
+// const result = 'duck duck go'.replace(searchRegExp, replaceWith);
 getKeywords();
 searchOnReddit($("#recentsearches").val());
 
@@ -25,6 +34,7 @@ function searchOnWikipedia(term) {
     var url = "https://en.wikipedia.org/w/api.php";
 
     var params = {
+
         action: "query",
         list: "search",
         srsearch: term,
@@ -35,17 +45,46 @@ function searchOnWikipedia(term) {
 
     url = url + "?origin=*";
     Object.keys(params).forEach(function (key) { url += "&" + key + "=" + params[key]; });
-
     fetch(url)
-        .then(function (response) { return response.json(); })
         .then(function (response) {
-            console.log(response);
+            if (response.ok) {
+                return response.json();
+            } else {
+                return;
+            }
         })
-        .catch(function (error) { console.log(error); });
+        .then(function (data) {
+            if (!data) {
+                alert("We ran into some issues, please contact the developer at zhangxuyang.chn@gmail.com");
+            } else {
+                console.log(data);
+                $(tooltipEl).tooltip('dispose');
+                tooltipTitle = data.query.search[0].title;
+                tooltipSnippet = data.query.search[0].snippet;
+                tooltipLink = "https://en.wikipedia.org/wiki/" + data.query.search[0].title.replace(searchRegExp, replaceWith);
+                tooltipHTML =`<p>${tooltipTitle}</p><p>${tooltipSnippet}</p><p>${tooltipLink}</p>`;
+                tooltipEl.setAttribute("data-toggle", "tooltip");
+                // tooltipEl.setAttribute("data-html", true);
+                // tooltipEl.setAttribute("data-placement", "bottom");
+
+                // tooltipEl.setAttribute("title", `${tooltipHTML}`);
+                $(tooltipEl).tooltip({title: `${tooltipHTML}`, html: true, placement: "bottom"}); 
+
+            }
+        })
 }
+//     fetch(url)
+//         .then(function (response) { return response.json(); })
+//         .then(function (data) {
+//             console.log(data);
+//             return data;
+
+//         })
+//         .catch(function (error) { console.log(error); });
+// }
 
 $("#recentsearches").on("change", function () {
-    
+
     searchOnReddit($("#recentsearches").val());
 })
 
@@ -54,24 +93,40 @@ $("#recentsearches").on("change", function () {
 function debounce(fn, delay) {
     let timer = null;
     return function () {
-      var context = this, args = arguments;
-      clearTimeout(timer);
-      timer = setTimeout(function () {
-        fn.apply(context, args);
-      }, delay);
+        var context = this, args = arguments;
+        clearTimeout(timer);
+        timer = setTimeout(function () {
+            fn.apply(context, args);
+        }, delay);
     };
-  };
+};
 // const redditPostContainer = document.getElementById("redditpostcontainer");
 //   $("#redditpostcontainer").on("selectionchange",debounce(function (event) {
 //     let selection = document.getSelection ? document.getSelection().toString() :  document.selection.createRange().toString() ;
 //     console.log(selection);
 //   }, 250));
 document.addEventListener("selectionchange", debounce(function (event) {
-    let selection = document.getSelection ? document.getSelection().toString() :  document.selection.createRange().toString() ;
-    console.log(selection);
-    searchOnWikipedia(selection);
+    let selection = document.getSelection ? document.getSelection().toString() : document.selection.createRange().toString();
+    let wikipediaResponse;
 
-  }, 250));
+    console.log(selection);
+    // console.log(document.getSelection().anchorNode.parentNode);
+    tooltipEl= document.getSelection().anchorNode.parentNode;
+    searchOnWikipedia(selection);
+    // // console.log(searchOnWikipedia(selection));
+    // console.log(wikipediaResponse);
+    // tooltipTitle = wikipediaResponse.query.search[0].title;
+    // tooltipSnippet = wikipediaResponse.query.search[0].snippet;
+    // console.log(tooltipTitle);
+    // console.log(tooltipSnippet);
+
+    // document.getSelection().anchorNode.parentNode.setAttribute("data-toggle", "tooltip");
+    // document.getSelection().anchorNode.parentNode.setAttribute("data-placement", "bottom");
+    // // document.getSelection().anchorNode.parentNode.setAttribute("data-html", "true");
+    // document.getSelection().anchorNode.parentNode.setAttribute("title", `A solid-state drive (<span class="searchmatch">SSD</span>) is a solid-state storage device that uses integrated circuit assemblies to store data persistently, typically using flash memory`);
+
+
+}, 250));
 
 
 
@@ -136,7 +191,7 @@ function saveKeywords(keywords) {
     // const exists = Boolean(keywordsArray.find(x => keywords));
     keywordsArray.unshift(keywords);
     localStorage.setItem("KeywordsArray", JSON.stringify(keywordsArray));
-    
+
 }
 
 // read from localstorage
@@ -155,7 +210,58 @@ function renderKeywords() {
     }
 }
 
+// Get all available categories
+function loadCategories() {
+    let requestUrl = `https://www.reddit.com/api/available_subreddit_categories.json`;
+    fetch(requestUrl)
+        .then(function (response) {
+            if (response.ok) {
+                return response.json();
+            } else {
+                return;
+            }
+        })
+        .then(function (data) {
+            if (!data) {
+                alert("We ran into some issues, please contact the developer at zhangxuyang.chn@gmail.com");
+            } else {
+                // console.log(data);
+                $("#categories").empty();
+                for (let i = 0; i < data.length; i++) {
+                    $("#categories").append(
+                        `<option value="${data[i].category_id}">${data[i].category_name}</option>`
+                    );
+                }
 
+            }
+        })
+}
+loadCategories();
 
-// d-flex row justify-content-between 
-/* <p class="card-text reddit-post-text">${jsonresponse.data.children[i].data.selftext_html || ""}</p> */
+// Get all subreddit by category
+function loadSubredditByCat(categoryID) {
+    let requestUrl = `https://www.reddit.com/api/subreddits_in_category.json?category=${categoryID}&limit=100`;
+    fetch(requestUrl)
+        .then(function (response) {
+            if (response.ok) {
+                return response.json();
+            } else {
+                return;
+            }
+        })
+        .then(function (data) {
+            if (!data) {
+                alert("We ran into some issues, please contact the developer at zhangxuyang.chn@gmail.com");
+            } else {
+                console.log(data);
+                $("#subredditlist").empty();
+                for (let i = 0; i < data.data.children.length; i++) {
+                    $("#subredditlist").append(
+                        `<option value="${data.data.children[i].data.display_name_prefixed}">`
+                    );
+                }
+
+            }
+        })
+}
+loadSubredditByCat("c10");

@@ -62,13 +62,13 @@ function searchOnWikipedia(term) {
                 tooltipTitle = data.query.search[0].title;
                 tooltipSnippet = data.query.search[0].snippet;
                 tooltipLink = "https://en.wikipedia.org/wiki/" + data.query.search[0].title.replace(searchRegExp, replaceWith);
-                tooltipHTML =`<p>${tooltipTitle}</p><p>${tooltipSnippet}</p><p>${tooltipLink}</p>`;
+                tooltipHTML =`<p>${tooltipTitle}</p><p>${tooltipSnippet}</p><a href="${tooltipLink}">${tooltipLink}</a>`;
                 tooltipEl.setAttribute("data-toggle", "tooltip");
                 // tooltipEl.setAttribute("data-html", true);
                 // tooltipEl.setAttribute("data-placement", "bottom");
 
                 // tooltipEl.setAttribute("title", `${tooltipHTML}`);
-                $(tooltipEl).tooltip({title: `${tooltipHTML}`, html: true, placement: "bottom"}); 
+                $(tooltipEl).tooltip({title: `${tooltipHTML}`, html: true, placement: "bottom", delay: { "show": 0, "hide": 3000 }}); 
 
             }
         })

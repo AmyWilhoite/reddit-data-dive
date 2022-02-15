@@ -5,8 +5,9 @@ let tooltipLink;
 let tooltipHTML;
 let tooltipEl;
 let categoryID;
+let categoryFilterString = "";
 let timeSpan = "month";
-let subreddit = "subreddit";
+let subreddit = "r/subreddit";
 let sortBy = "top";
 let scope = "false";
 const searchRegExp = /\s/g;
@@ -14,7 +15,7 @@ const replaceWith = '_';
 
 // const result = 'duck duck go'.replace(searchRegExp, replaceWith);
 getKeywords();
-$( "#subredditselection" ).prop( "disabled", true );
+$("#subredditselection").prop("disabled", true);
 searchOnReddit($("#recentsearches").val());
 
 $("#searchBtn").on("click", function (event) {
@@ -61,14 +62,14 @@ function searchOnWikipedia(term) {
         })
         .then(function (data) {
             if (!data) {
-                alert("We ran into some issues, please contact the developer at zhangxuyang.chn@gmail.com");
+                console.log("We ran into some issues, please contact the developer at zhangxuyang.chn@gmail.com");
             } else {
                 console.log(data);
                 $(tooltipEl).tooltip('dispose');
                 tooltipTitle = data.query.search[0].title;
                 tooltipSnippet = data.query.search[0].snippet;
                 tooltipLink = "https://en.wikipedia.org/wiki/" + data.query.search[0].title.replace(searchRegExp, replaceWith);
-                tooltipHTML = `<p>${tooltipTitle}</p><p>${tooltipSnippet}</p><a href="${tooltipLink}">${tooltipLink}</a>`;
+                tooltipHTML = `<p>${tooltipTitle}</p><p>${tooltipSnippet}</p><a href="${tooltipLink}" target="_blank">${tooltipLink}</a>`;
                 tooltipEl.setAttribute("data-toggle", "tooltip");
                 // tooltipEl.setAttribute("data-html", true);
                 // tooltipEl.setAttribute("data-placement", "bottom");
@@ -138,7 +139,7 @@ document.addEventListener("selectionchange", debounce(function (event) {
 
 // Reddit Search Function
 function searchOnReddit(keyword) {
-    let requestUrl = `https://www.reddit.com/r/${subreddit}/search.json?q=${keyword}&sort=${sortBy}&t=${timeSpan}&limit=3&restrict_sr=${scope}`;
+    let requestUrl = `https://www.reddit.com/${subreddit}/search.json?q=${keyword}&sort=${sortBy}&t=${timeSpan}&limit=3&restrict_sr=${scope}${categoryFilterString}`;
     console.log(requestUrl);
     // let requestUrl = `https://www.reddit.com/r/${subreddit}/search.json?q=${keyword}&sort=${sortBy}&t=${timeSpan}&limit=3&restrict_sr=${scope}&category=${categoryID}`;
     fetch(requestUrl)
@@ -151,7 +152,7 @@ function searchOnReddit(keyword) {
         })
         .then(function (data) {
             if (!data) {
-                alert("We ran into some issues, please contact the developer at zhangxuyang.chn@gmail.com");
+                console.log("We ran into some issues, please contact the developer at zhangxuyang.chn@gmail.com");
             } else {
                 console.log(data);
                 renderRedditSearchResults(data);
@@ -231,10 +232,13 @@ function loadCategories() {
         })
         .then(function (data) {
             if (!data) {
-                alert("We ran into some issues, please contact the developer at zhangxuyang.chn@gmail.com");
+                console.log("We ran into some issues, please contact the developer at zhangxuyang.chn@gmail.com");
             } else {
                 // console.log(data);
                 $("#categories").empty();
+                $("#categories").append(
+                    `<option value="any">Any</option>`
+                );
                 for (let i = 0; i < data.length; i++) {
                     $("#categories").append(
                         `<option value="${data[i].category_id}">${data[i].category_name}</option>`
@@ -259,7 +263,7 @@ function loadSubredditByCat(categoryID) {
         })
         .then(function (data) {
             if (!data) {
-                alert("We ran into some issues, please contact the developer at zhangxuyang.chn@gmail.com");
+                console.log("We ran into some issues, please contact the developer at zhangxuyang.chn@gmail.com");
             } else {
                 console.log(data);
                 $("#subredditlist").empty();
@@ -277,16 +281,25 @@ function loadSubredditByCat(categoryID) {
 $("#categories").on('change', function () {
 
     loadSubredditByCat($("#categories").val());
+    categoryID = $("#categories").val();
+    if (categoryID ==="any") {
+        categoryFilterString = ""
+    } else {
+        categoryFilterString = "&category=" + categoryID;
+    }
+    $("#subredditselection").val("");
 });
 
 $("#scope").on('change', function () {
 
     if ($("#scope").val() === "Reddit") {
         scope = "false";
-        $( "#subredditselection" ).prop( "disabled", true );
-    } else { 
-        scope = "true"; 
-        $( "#subredditselection" ).prop( "disabled", false );
+        $("#subredditselection").prop("disabled", true);
+        subreddit = "r/subreddit";
+    } else {
+        scope = "true";
+        $("#subredditselection").prop("disabled", false);
+        
     }
 });
 
@@ -294,10 +307,16 @@ $("#scope").on('change', function () {
 
 $("#sortby").on('change', function () {
 
-    sortBy=$("#sortby").val();
+    sortBy = $("#sortby").val();
 });
 
 $("#timespan").on('change', function () {
 
-    timeSpan=$("#timespan").val();
+    timeSpan = $("#timespan").val();
 });
+
+$("#subredditselection").on("input", function (event) {
+    if (event.inputType == "insertReplacementText" || event.inputType == null) {
+        subreddit = $('#subredditselection').val();
+    }
+})

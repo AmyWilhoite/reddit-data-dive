@@ -1,5 +1,6 @@
 
 let keywordsArray = [];
+let chartData = [];
 let tooltipTitle;
 let tooltipSnippet;
 let tooltipLink;
@@ -13,21 +14,19 @@ let sortBy = "top";
 let scope = "false";
 const searchRegExp = /\s/g;
 const replaceWith = '_';
-// const result = 'duck duck go'.replace(searchRegExp, replaceWith);
+const ctx = document.getElementById('myChart');
+
 getKeywords();
 $("#subredditselection").prop("disabled", true);
 searchOnReddit($("#recentsearches").val());
 $("#searchBtn").on("click", function (event) {
     event.preventDefault();
-    //get the textbox value
-    // if ($("#userData").val() === "") {
-    //     console.log("type in something"); //should we allow user to search without keyword? modal for warning?
-    // } else {
+
     searchOnReddit($("#userData").val());
     saveKeywords($("#userData").val());
     searchKeywordMentions($("#userData").val());
     renderKeywords();
-    // }
+
 })
 function searchOnWikipedia(term) {
     var url = "https://en.wikipedia.org/w/api.php";
@@ -184,147 +183,255 @@ function returnPreviewImage(child) {
         return "https://play-lh.googleusercontent.com/MDRjKWEIHO9cGiWt-tlvOGpAP3x14_89jwAT-nQTS6Fra-gxfakizwJ3NHBTClNGYK4";
     }
 }
-    // save to localstorage
-    function saveKeywords(keywords) {
-        // const exists = Boolean(keywordsArray.find(x => keywords));
+// save to localstorage
+function saveKeywords(keywords) {
+
+    if (!keywordsArray.includes(keywords)) {
         if (keywordsArray.length >= 10) {
             keywordsArray.pop();
         }
         keywordsArray.unshift(keywords);
         localStorage.setItem("KeywordsArray", JSON.stringify(keywordsArray));
+        getKeywords();
+
     }
-    // read from localstorage
-    function getKeywords() {
-        keywordsArray = JSON.parse(localStorage.getItem("KeywordsArray")) || [];
-        renderKeywords();
-    }
-    // Render keywords on screen
-    function renderKeywords() {
-        $("#recentsearches").empty();
+
+}
+// read from localstorage
+function getKeywords() {
+    let chartData = [];
+    keywordsArray = JSON.parse(localStorage.getItem("KeywordsArray")) || [];
+
+    renderKeywords();
+    // ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange']
+
+
         for (let i = 0; i < keywordsArray.length; i++) {
-            $("#recentsearches").append(
-                `<option value="${keywordsArray[i]}">${keywordsArray[i]}</option>`
-            );
+            
+            
         }
-    }
-    // Get all available categories
-    function loadCategories() {
-        let requestUrl = `https://www.reddit.com/api/available_subreddit_categories.json`;
-        fetch(requestUrl)
-            .then(function (response) {
-                if (response.ok) {
-                    return response.json();
-                } else {
-                    return;
+    
+        const myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: keywordsArray,
+                datasets: [{
+                    label: '# of Mentions',
+                    data: chartData,
+                    // backgroundColor: [
+                    //     'rgba(255, 99, 132, 0.2)',
+                    //     'rgba(54, 162, 235, 0.2)',
+                    //     'rgba(255, 206, 86, 0.2)',
+                    //     'rgba(75, 192, 192, 0.2)',
+                    //     'rgba(153, 102, 255, 0.2)',
+                    //     'rgba(255, 159, 64, 0.2)'
+                    // ],
+                    // borderColor: [
+                    //     'rgba(255, 99, 132, 1)',
+                    //     'rgba(54, 162, 235, 1)',
+                    //     'rgba(255, 206, 86, 1)',
+                    //     'rgba(75, 192, 192, 1)',
+                    //     'rgba(153, 102, 255, 1)',
+                    //     'rgba(255, 159, 64, 1)'
+                    // ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
                 }
-            })
-            .then(function (data) {
-                if (!data) {
-                    console.log("We ran into some issues, please contact the developer at zhangxuyang.chn@gmail.com");
-                } else {
-                    // console.log(data);
-                    $("#categories").empty();
+            }
+        });
+    }
+
+
+
+// Render keywords on screen
+function renderKeywords() {
+    $("#recentsearches").empty();
+    for (let i = 0; i < keywordsArray.length; i++) {
+        $("#recentsearches").append(
+            `<option value="${keywordsArray[i]}">${keywordsArray[i]}</option>`
+        );
+
+    }
+}
+// Get all available categories
+function loadCategories() {
+    let requestUrl = `https://www.reddit.com/api/available_subreddit_categories.json`;
+    fetch(requestUrl)
+        .then(function (response) {
+            if (response.ok) {
+                return response.json();
+            } else {
+                return;
+            }
+        })
+        .then(function (data) {
+            if (!data) {
+                console.log("We ran into some issues, please contact the developer at zhangxuyang.chn@gmail.com");
+            } else {
+                // console.log(data);
+                $("#categories").empty();
+                $("#categories").append(
+                    `<option value="any">Any</option>`
+                );
+                for (let i = 0; i < data.length; i++) {
                     $("#categories").append(
-                        `<option value="any">Any</option>`
+                        `<option value="${data[i].category_id}">${data[i].category_name}</option>`
                     );
-                    for (let i = 0; i < data.length; i++) {
-                        $("#categories").append(
-                            `<option value="${data[i].category_id}">${data[i].category_name}</option>`
-                        );
-                    }
                 }
-            })
+            }
+        })
+}
+loadCategories();
+
+// Populate Chart Data
+// async function populateChartData (k) {
+//     var data =await searchKeywordMentions(k);
+    
+//    await chartData.push();
+// }
+
+// Get all subreddit by category
+function loadSubredditByCat(categoryID) {
+    let requestUrl = `https://www.reddit.com/api/subreddits_in_category.json?category=${categoryID}&limit=10`;
+    fetch(requestUrl)
+        .then(function (response) {
+            if (response.ok) {
+                return response.json();
+            } else {
+                return;
+            }
+        })
+        .then(function (data) {
+            if (!data) {
+                console.log("We ran into some issues, please contact the developer at zhangxuyang.chn@gmail.com");
+            } else {
+                console.log(data);
+                $("#subredditlist").empty();
+                for (let i = 0; i < data.data.children.length; i++) {
+                    $("#subredditlist").append(
+                        `<option value="${data.data.children[i].data.display_name_prefixed}">`
+                    );
+                }
+            }
+        })
+}
+$("#categories").on('change', function () {
+    loadSubredditByCat($("#categories").val());
+    categoryID = $("#categories").val();
+    if (categoryID === "any") {
+        categoryFilterString = ""
+    } else {
+        categoryFilterString = "&category=" + categoryID;
     }
-    loadCategories();
-    // Get all subreddit by category
-    function loadSubredditByCat(categoryID) {
-        let requestUrl = `https://www.reddit.com/api/subreddits_in_category.json?category=${categoryID}&limit=10`;
-        fetch(requestUrl)
-            .then(function (response) {
-                if (response.ok) {
-                    return response.json();
-                } else {
-                    return;
-                }
-            })
-            .then(function (data) {
-                if (!data) {
-                    console.log("We ran into some issues, please contact the developer at zhangxuyang.chn@gmail.com");
-                } else {
-                    console.log(data);
-                    $("#subredditlist").empty();
-                    for (let i = 0; i < data.data.children.length; i++) {
-                        $("#subredditlist").append(
-                            `<option value="${data.data.children[i].data.display_name_prefixed}">`
-                        );
-                    }
-                }
-            })
+    $("#subredditselection").val("");
+});
+$("#scope").on('change', function () {
+    if ($("#scope").val() === "Reddit") {
+        scope = "false";
+        $("#subredditselection").prop("disabled", true);
+        subreddit = "r/subreddit";
+    } else {
+        scope = "true";
+        $("#subredditselection").prop("disabled", false);
     }
-    $("#categories").on('change', function () {
-        loadSubredditByCat($("#categories").val());
-        categoryID = $("#categories").val();
-        if (categoryID === "any") {
-            categoryFilterString = ""
-        } else {
-            categoryFilterString = "&category=" + categoryID;
-        }
-        $("#subredditselection").val("");
-    });
-    $("#scope").on('change', function () {
-        if ($("#scope").val() === "Reddit") {
-            scope = "false";
-            $("#subredditselection").prop("disabled", true);
-            subreddit = "r/subreddit";
-        } else {
-            scope = "true";
-            $("#subredditselection").prop("disabled", false);
-        }
-    });
+});
 
 
-    $("#sortby").on('change', function () {
-        sortBy = $("#sortby").val();
-    });
-    $("#timespan").on('change', function () {
-        timeSpan = $("#timespan").val();
-    });
-    $("#subredditselection").on("input", function (event) {
-        if (event.inputType == "insertReplacementText" || event.inputType == null) {
-            subreddit = $('#subredditselection').val();
-        }
-    })
-
-    function searchKeywordMentions(searchTerm) {
-        let requestUrl = `https://api.pushshift.io/reddit/search/comment/?q=${searchTerm}&size=0&metadata=true&after=7d`;
-        console.log(requestUrl);
-
-        fetch(requestUrl)
-            .then(function (response) {
-                if (response.ok) {
-                    return response.json();
-                } else {
-                    return;
-                }
-            })
-            .then(function (data) {
-                if (!data) {
-                    console.log("We ran into some issues, please contact the developer at zhangxuyang.chn@gmail.com");
-                } else {
-
-                    console.log(data.metadata.total_results);
-                    renderKeywordsMentionCount(data.metadata.total_results);
-
-
-                }
-            })
+$("#sortby").on('change', function () {
+    sortBy = $("#sortby").val();
+});
+$("#timespan").on('change', function () {
+    timeSpan = $("#timespan").val();
+});
+$("#subredditselection").on("input", function (event) {
+    if (event.inputType == "insertReplacementText" || event.inputType == null) {
+        subreddit = $('#subredditselection').val();
     }
+})
+
+function searchKeywordMentions(searchTerm) {
+    let requestUrl = `https://api.pushshift.io/reddit/search/comment/?q=${searchTerm}&size=0&metadata=true&after=7d`;
+    console.log(requestUrl);
+
+    fetch(requestUrl)
+        .then(function (response) {
+            if (response.ok) {
+                return response.json();
+            } else {
+                return;
+            }
+        })
+        .then(function (data) {
+            if (!data) {
+                console.log("We ran into some issues, please contact the developer at zhangxuyang.chn@gmail.com");
+            } else {
+
+                console.log(data.metadata.total_results);
+                renderKeywordsMentionCount(data.metadata.total_results);
+                return parseInt(data.metadata.total_results);
 
 
-    function renderKeywordsMentionCount(number) {
-        $("#countalert").remove();
-        $("#searchBtn").after(`
+            }
+        })
+}
+
+
+function renderKeywordsMentionCount(number) {
+    $("#countalert").remove();
+    $("#searchBtn").after(`
     <div class="alert alert-success mt-3" id="countalert" role="alert">
     Mentioned ${number} times in the past 7 days!</div>`
-        );
+    );
+}
+
+//random color
+function getRandomColor() {
+    var letters = '0123456789ABCDEF'.split('');
+    var color = '#';
+    for (var i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
     }
+    return color;
+}
+
+
+// const myChart = new Chart(ctx, {
+//     type: 'bar',
+//     data: {
+//         labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+//         datasets: [{
+//             label: '# of Mentions',
+//             data: [5000, 8000, 333, 45, 2, 1],
+//             // backgroundColor: [
+//             //     'rgba(255, 99, 132, 0.2)',
+//             //     'rgba(54, 162, 235, 0.2)',
+//             //     'rgba(255, 206, 86, 0.2)',
+//             //     'rgba(75, 192, 192, 0.2)',
+//             //     'rgba(153, 102, 255, 0.2)',
+//             //     'rgba(255, 159, 64, 0.2)'
+//             // ],
+//             // borderColor: [
+//             //     'rgba(255, 99, 132, 1)',
+//             //     'rgba(54, 162, 235, 1)',
+//             //     'rgba(255, 206, 86, 1)',
+//             //     'rgba(75, 192, 192, 1)',
+//             //     'rgba(153, 102, 255, 1)',
+//             //     'rgba(255, 159, 64, 1)'
+//             // ],
+//             borderWidth: 1
+//         }]
+//     },
+//     options: {
+//         scales: {
+//             y: {
+//                 beginAtZero: true
+//             }
+//         }
+//     }
+// });

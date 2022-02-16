@@ -1,6 +1,8 @@
 
 let keywordsArray = [];
 let chartData = [];
+let myChart = {};
+let chartBackgroundColors = [];
 let tooltipTitle;
 let tooltipSnippet;
 let tooltipLink;
@@ -178,6 +180,8 @@ function returnPreviewImage(child) {
     } else if (child.data.media) {
         if (child.data.media.oembed) {
             return child.data.media.oembed.thumbnail_url;
+        } else {
+            return "https://play-lh.googleusercontent.com/MDRjKWEIHO9cGiWt-tlvOGpAP3x14_89jwAT-nQTS6Fra-gxfakizwJ3NHBTClNGYK4";
         }
     } else {
         return "https://play-lh.googleusercontent.com/MDRjKWEIHO9cGiWt-tlvOGpAP3x14_89jwAT-nQTS6Fra-gxfakizwJ3NHBTClNGYK4";
@@ -199,53 +203,14 @@ function saveKeywords(keywords) {
 }
 // read from localstorage
 function getKeywords() {
-    let chartData = [];
     keywordsArray = JSON.parse(localStorage.getItem("KeywordsArray")) || [];
 
     renderKeywords();
-    // ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange']
 
 
-        for (let i = 0; i < keywordsArray.length; i++) {
-            
-            
-        }
-    
-        const myChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: keywordsArray,
-                datasets: [{
-                    label: '# of Mentions',
-                    data: chartData,
-                    // backgroundColor: [
-                    //     'rgba(255, 99, 132, 0.2)',
-                    //     'rgba(54, 162, 235, 0.2)',
-                    //     'rgba(255, 206, 86, 0.2)',
-                    //     'rgba(75, 192, 192, 0.2)',
-                    //     'rgba(153, 102, 255, 0.2)',
-                    //     'rgba(255, 159, 64, 0.2)'
-                    // ],
-                    // borderColor: [
-                    //     'rgba(255, 99, 132, 1)',
-                    //     'rgba(54, 162, 235, 1)',
-                    //     'rgba(255, 206, 86, 1)',
-                    //     'rgba(75, 192, 192, 1)',
-                    //     'rgba(153, 102, 255, 1)',
-                    //     'rgba(255, 159, 64, 1)'
-                    // ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
-    }
+
+
+}
 
 
 
@@ -253,11 +218,18 @@ function getKeywords() {
 function renderKeywords() {
     $("#recentsearches").empty();
     for (let i = 0; i < keywordsArray.length; i++) {
+        let count = 0;
         $("#recentsearches").append(
             `<option value="${keywordsArray[i]}">${keywordsArray[i]}</option>`
         );
-
+        count = Math.floor(Math.random() * 10000) + 1;
+        chartData.push(count);
+        chartBackgroundColors.push(getRandomColor());
     }
+    if (myChart instanceof Chart) {
+        myChart.destroy();
+    }
+    drawChart();
 }
 // Get all available categories
 function loadCategories() {
@@ -289,12 +261,7 @@ function loadCategories() {
 }
 loadCategories();
 
-// Populate Chart Data
-// async function populateChartData (k) {
-//     var data =await searchKeywordMentions(k);
-    
-//    await chartData.push();
-// }
+
 
 // Get all subreddit by category
 function loadSubredditByCat(categoryID) {
@@ -401,37 +368,32 @@ function getRandomColor() {
 }
 
 
-// const myChart = new Chart(ctx, {
-//     type: 'bar',
-//     data: {
-//         labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
-//         datasets: [{
-//             label: '# of Mentions',
-//             data: [5000, 8000, 333, 45, 2, 1],
-//             // backgroundColor: [
-//             //     'rgba(255, 99, 132, 0.2)',
-//             //     'rgba(54, 162, 235, 0.2)',
-//             //     'rgba(255, 206, 86, 0.2)',
-//             //     'rgba(75, 192, 192, 0.2)',
-//             //     'rgba(153, 102, 255, 0.2)',
-//             //     'rgba(255, 159, 64, 0.2)'
-//             // ],
-//             // borderColor: [
-//             //     'rgba(255, 99, 132, 1)',
-//             //     'rgba(54, 162, 235, 1)',
-//             //     'rgba(255, 206, 86, 1)',
-//             //     'rgba(75, 192, 192, 1)',
-//             //     'rgba(153, 102, 255, 1)',
-//             //     'rgba(255, 159, 64, 1)'
-//             // ],
-//             borderWidth: 1
-//         }]
-//     },
-//     options: {
-//         scales: {
-//             y: {
-//                 beginAtZero: true
-//             }
-//         }
-//     }
-// });
+function drawChart() {
+    myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: keywordsArray,
+            datasets: [{
+                label: '# of Mentions',
+                data: chartData,
+                backgroundColor: chartBackgroundColors,
+                // borderColor: [
+                //     'rgba(255, 99, 132, 1)',
+                //     'rgba(54, 162, 235, 1)',
+                //     'rgba(255, 206, 86, 1)',
+                //     'rgba(75, 192, 192, 1)',
+                //     'rgba(153, 102, 255, 1)',
+                //     'rgba(255, 159, 64, 1)'
+                // ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}

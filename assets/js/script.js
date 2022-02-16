@@ -99,7 +99,7 @@ document.addEventListener("selectionchange", debounce(function (event) {
 
 // Reddit Search Function
 function searchOnReddit(keyword) {
-    let requestUrl = `https://www.reddit.com/${subreddit}/search.json?q=${keyword}&sort=${sortBy}&t=${timeSpan}&limit=3&restrict_sr=${scope}${categoryFilterString}`;
+    let requestUrl = `https://www.reddit.com/${subreddit}/search.json?q=${keyword}&sort=${sortBy}&t=${timeSpan}&limit=4&restrict_sr=${scope}${categoryFilterString}`;
     console.log(requestUrl);
     // let requestUrl = `https://www.reddit.com/r/${subreddit}/search.json?q=${keyword}&sort=${sortBy}&t=${timeSpan}&limit=3&restrict_sr=${scope}&category=${categoryID}`;
     fetch(requestUrl)
@@ -132,7 +132,8 @@ function renderRedditSearchResults(jsonresponse) {
     $("#redditpostcontainer").empty();
     for (let i = 0; i < jsonresponse.data.children.length; i++) {
         $("#redditpostcontainer").append(
-            `<div class="card" style="width: 18rem;">
+            // `<div class="card" style="width: 18rem;">
+            `<div class="card mx-1 mb-2 col-md-12 col-lg-5 p-0">
     <div class="card-header mt-0 pb-0">
       <p class="card-text reddit-post-sr pt-0 my-0">${jsonresponse.data.children[i].data.subreddit_name_prefixed}</p>
       <p class="card-text reddit-post-author my-0"> Posted by u/${jsonresponse.data.children[i].data.author}</p>

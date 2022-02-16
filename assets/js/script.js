@@ -1,3 +1,4 @@
+
 let keywordsArray = [];
 let tooltipTitle;
 let tooltipSnippet;
@@ -12,36 +13,24 @@ let sortBy = "top";
 let scope = "false";
 const searchRegExp = /\s/g;
 const replaceWith = '_';
-
 // const result = 'duck duck go'.replace(searchRegExp, replaceWith);
 getKeywords();
 $("#subredditselection").prop("disabled", true);
 searchOnReddit($("#recentsearches").val());
-
 $("#searchBtn").on("click", function (event) {
     event.preventDefault();
     //get the textbox value
     if ($("#userData").val() === "") {
-        console.log("type in something");
+        console.log("type in something"); //should we allow user to search without keyword? modal for warning?
     } else {
-        // searchOnWikipedia($("#userData").val());
         searchOnReddit($("#userData").val());
         saveKeywords($("#userData").val());
         renderKeywords();
-        // renderKeywords();
     }
-
 })
-
 function searchOnWikipedia(term) {
-    /*
- 
- */
-
     var url = "https://en.wikipedia.org/w/api.php";
-
     var params = {
-
         action: "query",
         list: "search",
         srsearch: term,
@@ -49,7 +38,6 @@ function searchOnWikipedia(term) {
         srprop: "snippet",
         format: "json"
     };
-
     url = url + "?origin=*";
     Object.keys(params).forEach(function (key) { url += "&" + key + "=" + params[key]; });
     fetch(url)
@@ -71,30 +59,14 @@ function searchOnWikipedia(term) {
                 tooltipLink = "https://en.wikipedia.org/wiki/" + data.query.search[0].title.replace(searchRegExp, replaceWith);
                 tooltipHTML = `<p>${tooltipTitle}</p><p>${tooltipSnippet}</p><a href="${tooltipLink}" target="_blank">${tooltipLink}</a>`;
                 tooltipEl.setAttribute("data-toggle", "tooltip");
-                // tooltipEl.setAttribute("data-html", true);
-                // tooltipEl.setAttribute("data-placement", "bottom");
-
-                // tooltipEl.setAttribute("title", `${tooltipHTML}`);
                 $(tooltipEl).tooltip({ title: `${tooltipHTML}`, html: true, placement: "bottom", delay: { "show": 0, "hide": 3000 } });
-
             }
         })
 }
-//     fetch(url)
-//         .then(function (response) { return response.json(); })
-//         .then(function (data) {
-//             console.log(data);
-//             return data;
-
-//         })
-//         .catch(function (error) { console.log(error); });
-// }
 
 $("#recentsearches").on("change", function () {
-
     searchOnReddit($("#recentsearches").val());
 })
-
 // Event Listener for Text Highlight
 //https://stackoverflow.com/questions/3731328/on-text-highlight-event
 function debounce(fn, delay) {
@@ -114,27 +86,13 @@ function debounce(fn, delay) {
 //   }, 250));
 document.addEventListener("selectionchange", debounce(function (event) {
     let selection = document.getSelection ? document.getSelection().toString() : document.selection.createRange().toString();
-    let wikipediaResponse;
-
-    console.log(selection);
-    // console.log(document.getSelection().anchorNode.parentNode);
-    tooltipEl = document.getSelection().anchorNode.parentNode;
-    searchOnWikipedia(selection);
-    // // console.log(searchOnWikipedia(selection));
-    // console.log(wikipediaResponse);
-    // tooltipTitle = wikipediaResponse.query.search[0].title;
-    // tooltipSnippet = wikipediaResponse.query.search[0].snippet;
-    // console.log(tooltipTitle);
-    // console.log(tooltipSnippet);
-
-    // document.getSelection().anchorNode.parentNode.setAttribute("data-toggle", "tooltip");
-    // document.getSelection().anchorNode.parentNode.setAttribute("data-placement", "bottom");
-    // // document.getSelection().anchorNode.parentNode.setAttribute("data-html", "true");
-    // document.getSelection().anchorNode.parentNode.setAttribute("title", `A solid-state drive (<span class="searchmatch">SSD</span>) is a solid-state storage device that uses integrated circuit assemblies to store data persistently, typically using flash memory`);
-
-
-}, 250));
-
+    if (selection === "") { //essential to filter out clicks without selection
+        return;
+    } else {
+        tooltipEl = document.getSelection().anchorNode.parentNode;
+        searchOnWikipedia(selection);
+    }
+}, 500));
 
 
 // Reddit Search Function
@@ -155,11 +113,17 @@ function searchOnReddit(keyword) {
                 console.log("We ran into some issues, please contact the developer at zhangxuyang.chn@gmail.com");
             } else {
                 console.log(data);
-                renderRedditSearchResults(data);
+                if (data.data.dist ==0) {
+                    $("#searchresulttitle").text("No Search Result Returned");
+                    $("#redditpostcontainer").empty();
+                } else {
+                    $("#searchresulttitle").text("Search Results");
+                    renderRedditSearchResults(data);
+                }
+                
             }
         })
 }
-
 
 // Render Reddit Search Results
 function renderRedditSearchResults(jsonresponse) {
@@ -185,30 +149,32 @@ function renderRedditSearchResults(jsonresponse) {
         )
     }
 }
-
-// check preview image
+// check preview image, pull gif if there is one
 function returnPreviewImage(child) {
     if (!child.data.preview) {
         return "https://play-lh.googleusercontent.com/MDRjKWEIHO9cGiWt-tlvOGpAP3x14_89jwAT-nQTS6Fra-gxfakizwJ3NHBTClNGYK4"
+    } else if (child.data.preview.images[0].variants.gif) {
+        return child.data.preview.images[0].variants.gif.source.url;
+    } else if (!child.data.media) {
+        return child.data.preview.images[0].source.url;
     } else {
-        return child.data.preview.images[0].resolutions[1].url;
+        return child.data.media.oembed.thumbnail_url;
     }
 }
-
 // save to localstorage
 function saveKeywords(keywords) {
     // const exists = Boolean(keywordsArray.find(x => keywords));
+    if (keywordsArray.length >= 10) {
+        keywordsArray.pop();
+    }
     keywordsArray.unshift(keywords);
     localStorage.setItem("KeywordsArray", JSON.stringify(keywordsArray));
-
 }
-
 // read from localstorage
 function getKeywords() {
     keywordsArray = JSON.parse(localStorage.getItem("KeywordsArray")) || [];
     renderKeywords();
 }
-
 // Render keywords on screen
 function renderKeywords() {
     $("#recentsearches").empty();
@@ -218,7 +184,6 @@ function renderKeywords() {
         );
     }
 }
-
 // Get all available categories
 function loadCategories() {
     let requestUrl = `https://www.reddit.com/api/available_subreddit_categories.json`;
@@ -244,12 +209,10 @@ function loadCategories() {
                         `<option value="${data[i].category_id}">${data[i].category_name}</option>`
                     );
                 }
-
             }
         })
 }
 loadCategories();
-
 // Get all subreddit by category
 function loadSubredditByCat(categoryID) {
     let requestUrl = `https://www.reddit.com/api/subreddits_in_category.json?category=${categoryID}&limit=10`;
@@ -272,26 +235,20 @@ function loadSubredditByCat(categoryID) {
                         `<option value="${data.data.children[i].data.display_name_prefixed}">`
                     );
                 }
-
             }
         })
 }
-// loadSubredditByCat("c10");
-
 $("#categories").on('change', function () {
-
     loadSubredditByCat($("#categories").val());
     categoryID = $("#categories").val();
-    if (categoryID ==="any") {
+    if (categoryID === "any") {
         categoryFilterString = ""
     } else {
         categoryFilterString = "&category=" + categoryID;
     }
     $("#subredditselection").val("");
 });
-
 $("#scope").on('change', function () {
-
     if ($("#scope").val() === "Reddit") {
         scope = "false";
         $("#subredditselection").prop("disabled", true);
@@ -299,22 +256,16 @@ $("#scope").on('change', function () {
     } else {
         scope = "true";
         $("#subredditselection").prop("disabled", false);
-        
     }
 });
 
 
-
 $("#sortby").on('change', function () {
-
     sortBy = $("#sortby").val();
 });
-
 $("#timespan").on('change', function () {
-
     timeSpan = $("#timespan").val();
 });
-
 $("#subredditselection").on("input", function (event) {
     if (event.inputType == "insertReplacementText" || event.inputType == null) {
         subreddit = $('#subredditselection').val();

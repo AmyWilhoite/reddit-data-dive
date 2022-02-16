@@ -117,6 +117,7 @@ function searchOnReddit(keyword) {
                     $("#searchresulttitle").text("No Search Result Returned");
                     $("#redditpostcontainer").empty();
                 } else {
+                    $("#searchresulttitle").text("Search Results");
                     renderRedditSearchResults(data);
                 }
                 

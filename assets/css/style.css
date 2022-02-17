@@ -1,0 +1,26 @@
+.btn {
+    color: #0099CC;
+    background: transparent;
+    border: 2px solid #0099CC;
+    border-radius: 6px;
+    margin:0 0.3em 0.3em 0;
+    padding:0.5em 3em;
+}
+
+.btn:hover {
+    background-color: #0099CC;
+    color: white;
+}
+
+.jumbotron{
+    background-color: #FFFFFF;
+    background-color:none !important;
+ }
+
+ h2 {
+    color: #0099CC;
+ }
+
+ h4 {
+    color: #0099CC;
+ }

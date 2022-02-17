@@ -142,7 +142,7 @@ function renderRedditSearchResults(jsonresponse) {
     </div>
     <div class="card-body pt-0">
       <h5 class="card-title reddit-post-title">${jsonresponse.data.children[i].data.title}</h5>
-      <img src="${returnPreviewImage(jsonresponse.data.children[i])}" class="card-img-top" alt="..." style="max-height:250px; max-width:250px; width:100%; heigh:auto; display:d-block img-fluid mx-auto">
+      <img src="${returnPreviewImage(jsonresponse.data.children[i])}" class=" img-responsive card-img-top" alt="..." >
       
     </div>
     <div class="container d-flex justify-content-between card-footer">
